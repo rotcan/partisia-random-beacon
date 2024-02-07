@@ -141,7 +141,10 @@ const Whitelist = (props: Props) => {
 
                 console.log("tx", tx, res.logs);
             } catch (error) {
-                console.log("error", error);
+                //@ts-ignore
+                const msg=error.toString();
+                alert(msg.substring(msg.indexOf("reason=")+7,msg.indexOf("reason=")+7+msg.substring(msg.indexOf("reason=")+7).indexOf(",")));
+                
             }
             setLoading(false);
 
