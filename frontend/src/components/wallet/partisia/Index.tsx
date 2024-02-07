@@ -3,8 +3,6 @@ import { ConnectedWallet } from "../../../ConnectedWallet";
 import MetamaskWallet from "./Metamask";
 import MpcWallet from "./Mpc";
 import PrivateWallet from "./Private";
-import Contract from "../../contract/Index";
-import AdminWallet from "./Admin";
 import { Button, Grid, Grow, ListItemText, MenuItem, MenuList, Paper, Popper, Typography } from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
 import { wrapText } from "../../../utils/utils";
