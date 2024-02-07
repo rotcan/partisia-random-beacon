@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.css": "/static/css/main.bf454e3c.css",
-    "main.js": "/static/js/main.d5913757.js",
-    "static/js/612.e18009ef.chunk.js": "/static/js/612.e18009ef.chunk.js",
-    "index.html": "/index.html"
+    "main.css": "/partisia-random-beacon/static/css/main.bf454e3c.css",
+    "main.js": "/partisia-random-beacon/static/js/main.21321abd.js",
+    "static/js/612.e18009ef.chunk.js": "/partisia-random-beacon/static/js/612.e18009ef.chunk.js",
+    "index.html": "/partisia-random-beacon/index.html"
   },
   "entrypoints": [
     "static/css/main.bf454e3c.css",
-    "static/js/main.d5913757.js"
+    "static/js/main.21321abd.js"
   ]
 }
