@@ -33,19 +33,8 @@ export function     Card({
   provider,
 }: Props) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignSelf:"flex-end",
-        flexDirection: 'column',
-        // justifyContent: 'space-between',
-        // width: '20rem',
-        // padding: '1rem',
-        // marginRight:'1em',
-        marginLeft: "auto",
-        // overflow: 'auto',
-      }}
-    >
+    <>
+  
       {/* <b>{getName(connector)}</b> */}
       <Grid  container
                         direction="column"
@@ -54,7 +43,7 @@ export function     Card({
         {/* <div style={{display:"flex"}}>
         <Status isActivating={isActivating} isActive={isActive} error={error} />
         </div> */}
-        
+       
           <ConnectWithSelect
           connector={connector}
           activeChainId={activeChainId}
@@ -63,8 +52,9 @@ export function     Card({
           isActive={isActive}
           error={error}
           setError={setError}
+          account={account}
         />
-         {account && <Typography variant="caption" component="span">  {getTruncatedAddress(  account)} </Typography>}
+        {account && <Typography variant="caption" component="span">  {getTruncatedAddress(account)} </Typography>}
          
       </Grid>
       {/* <Chain chainId={activeChainId} /> */}
@@ -73,6 +63,7 @@ export function     Card({
         {/* <SingleAccount ENSName={ENSName} account={account} provider={provider}/> */}
       {/* </div> */}
       
-    </div>
+    
+    </>
   )
 }

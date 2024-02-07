@@ -24,7 +24,7 @@ use pbc_contract_common::address::Address;
 use pbc_contract_common::context::ContractContext;
 use pbc_contract_common::events::EventGroup;
 use pbc_contract_common::zk::{CalculationStatus, SecretVarId, ZkInputDef, ZkState, ZkStateChange,ZkClosed};
-use read_write_rpc_derive::{ReadRPC, ReadWriteRPC};
+use read_write_rpc_derive::{ReadRPC};
 use pbc_traits::{ReadRPC, ReadWriteState, WriteRPC};
 use create_type_spec_derive::CreateTypeSpec;
 use read_write_state_derive::ReadWriteState;
@@ -58,11 +58,16 @@ struct SecretVarMetadata {
 #[repr(C)]
 pub struct NextData {
   //  pub id: u64,
-   pub range_start: u64,
-   pub range_end: u64,
-   pub count: u8,
+//    pub range_start: i64,
+   pub range: i64,
+   pub count: i8,
+   signature_le_0: i64,
+   signature_le_1: i64,
+   signature_le_2: i64,
+   signature_le_3: i64,
 }
 
+const I64_TO_U64: i128=i64::MAX as i128 +1;
 
 #[derive(ReadWriteState, CreateTypeSpec, Clone)]
 struct RngResult{
@@ -70,6 +75,11 @@ struct RngResult{
     max_value:u64,
     values: Vec<u64>,
     calculate_timestamp: i64,
+    signature: Option<String>,
+    //signature_le_0: Option<String>,
+    // signature_le_1: i64,
+    // signature_le_2: i64,
+    // signature_le_3: i64,
     proof: Option<String>,
     sender: Option<Address>,
     result_id: u64,
@@ -97,7 +107,7 @@ struct RngContractState {
     ///
     value_generation_time: i64,
     ///
-    max_value_count: u8, 
+    max_value_count: i8, 
     current_result: u64,
     temp: Option<Vec<u8>>,
 }
@@ -115,7 +125,7 @@ struct RngContractState {
 /// The new state object of type [`ContractState`] with the administrator set to the
 /// caller of this function.
 #[init(zk=true)]
-fn initialize(ctx: ContractContext, zk_state: ZkState<SecretVarMetadata>,min_contributions: u8,max_value_count : u8) -> RngContractState {
+fn initialize(ctx: ContractContext, zk_state: ZkState<SecretVarMetadata>,min_contributions: u8,max_value_count : i8) -> RngContractState {
     RngContractState {
         administrator: ctx.sender,
         counter: 1,
@@ -279,7 +289,7 @@ fn reset_state(
     state: RngContractState,
     zk_state: ZkState<SecretVarMetadata>,
     min_contributions: u8,
-    max_value_count: u8,
+    max_value_count: i8,
 ) -> (RngContractState, Vec<EventGroup>, Vec<ZkStateChange>) {
 
     assert_eq!(
@@ -467,20 +477,31 @@ fn open_next_variable(
         //hash result
         //xor both of them
         // state.next_value=Some();
-        let mut count=settings.count ;
+        let mut count=settings.count; //+128 
         if count > state.max_value_count {
             count=state.max_value_count;
         }
 
-        let rng_values=ThreeFryType::get_ranged_num_by_count(settings.range_start,settings.range_end,&mut counter, seed, count  ,MAX_TRIES);
+        let range=deserialize_range_value(settings.range);
+        let start_u64=*range.get(0).unwrap();//(settings.range_start as i128+I64_TO_U64) as u64;
+        let end_u64=*range.get(1).unwrap();//(settings.range_end as i128 +I64_TO_U64) as u64;
+
+        let rng_values=ThreeFryType::get_ranged_num_by_count(start_u64.try_into().unwrap_or_else(|_| panic!("start field error {}", start_u64)),
+        end_u64.try_into().unwrap_or_else(|_| panic!("end field error {}", end_u64)),&mut counter, seed, count.try_into().expect("count field u8 error"),MAX_TRIES);
+        let full_signature=convert_i64sig_to_str(&mut vec![settings.signature_le_0,settings.signature_le_1,settings.signature_le_2,settings.signature_le_3]);
         let result=RngResult{
-            min_value: settings.range_start,
-            max_value: settings.range_end,
+            min_value: start_u64,
+            max_value: end_u64,
             values:rng_values,
             calculate_timestamp: context.block_production_time,
             sender: Some(context.sender),
             proof: None,
             result_id: state.current_result,
+            signature: Some(full_signature),
+            // signature_le_0: settings.signature_le_0,
+            // signature_le_1: settings.signature_le_1,
+            // signature_le_2: settings.signature_le_2,
+            // signature_le_3: settings.signature_le_3,
         };
         state.next_value.push(result.clone());
         state.counter=counter;
@@ -606,7 +627,26 @@ fn serialize_result_as_big_endian(result: RngResult) -> Vec<u8> {
     .calculate_timestamp
     .rpc_write_to(&mut output)
     .expect("Unable to serialize timestamp");
-     
+    result
+    .signature.map(|m| m.rpc_write_to(&mut output)
+    .expect("Unable to serialize signature"));
+    // result
+    // .signature_le_0
+    // .rpc_write_to(&mut output)
+    // .expect("Unable to serialize signature part 0");
+    // result
+    // .signature_le_1
+    // .rpc_write_to(&mut output)
+    // .expect("Unable to serialize signature part 1");
+    // result
+    // .signature_le_2
+    // .rpc_write_to(&mut output)
+    // .expect("Unable to serialize signature part 2");
+    // result
+    // .signature_le_3
+    // .rpc_write_to(&mut output)
+    // .expect("Unable to serialize signature part 3");
+    
      
     output
 }
@@ -655,4 +695,45 @@ fn read_variable<T: ReadWriteState>(
 ) -> T {
     let buffer: Vec<u8> = variable.data.clone().unwrap();
     T::state_read_from(&mut buffer.as_slice())
+}
+
+
+fn serialize_range_value(start_val: u64, end_val: u64)->u64{
+    let mut temp=start_val;
+    let mut bits=0;
+    while temp>0{
+         
+        bits+=1;
+        temp = temp >> 1;
+        
+    }
+    let diff=end_val-start_val;
+    let mut size_bits=(0..6).map(|m| (bits>>m) & (1)).collect::<Vec<u64>>();
+   // size_bits.reverse();
+    let  mut start_bits=(0..bits as usize).map(|m| (start_val>>m) & (1)).collect::<Vec<u64>>();
+//    start_bits.reverse();
+    let  mut end_bits=(0..(64-bits-6) as usize).map(|m| (diff>>m) & (1)).collect::<Vec<u64>>();
+  //  end_bits.reverse();
+    let mut final_array:Vec<u64>=vec![];
+    final_array=size_bits.iter().chain(start_bits.iter())
+    .chain(end_bits.iter()).map(|m| *m).collect::<Vec<u64>>();
+    let val:u64 = (0..63).fold(0,|acc,x| acc + &final_array[x] * (1<<x));
+    val
+    
+}
+
+fn deserialize_range_value(val: i64)->Vec<u64>{
+    let mut val=(val as i128 +I64_TO_U64) as u64;
+    // 6 + 58
+    let start_size=val & ((1<<6)-1);
+    val=val >>  6;
+    let start_val= val & ((1<< start_size) - 1);
+    val=val >> start_size;
+    let end_val=start_val+val;
+    return vec![start_val,end_val];
+}
+
+fn convert_i64sig_to_str(sigs: &mut Vec<i64>)-> String{
+    sigs.reverse();
+    sigs.iter().map(|m| format!("{:016x}", (*m as i128+I64_TO_U64) as u64)).collect::<Vec<String>>().join("")
 }

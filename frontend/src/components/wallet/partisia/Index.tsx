@@ -114,7 +114,7 @@ const Wallet = (props: Props) => {
         <>
             {/* <AdminWallet handleConnection={handleConnection}  callback={updateAdminCallback} 
             connected={adminWallet.userAccount ? true :false} disconnect={clearAdminConnection}/> */}
-            <div>
+            
                 {/* <p>Account: {status}</p> */}
                 {
                     !isWalletConnected() &&
@@ -192,19 +192,21 @@ const Wallet = (props: Props) => {
                             justifyContent="center"
                             textAlign={"center"}
                         >
+                           
                             <Button
                                 className="alignSelfRight"
                                 id="wallet-disconnect-btn"
                                 onClick={(e) => { e.preventDefault(); logout(); }}
                             > <PersonIcon /> <Typography variant="caption" component="span">Partisia</Typography></Button>
                             <Typography variant="caption" component="span">  {wrapText(props.connectedWallet.userAccount?.address)} </Typography>
+                            
                         </Grid>
                         {/* <div>
                             <Contract connectedWallet={connectedWallet.userAccount!} adminWallet={adminWallet.userAccount} />
                         </div> */}
                     </>)
                 }
-            </div>
+             
         </>
     )
 }

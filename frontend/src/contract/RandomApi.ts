@@ -54,14 +54,15 @@ export class RandomApi{
       };
 
       
-      private readonly buildNextContribution = ({count, rangeEnd,rangeStart}:{ rangeStart: BN, rangeEnd: BN, count: number}): Buffer => {
+      private readonly buildNextContribution = ({count, rangeSerialized,sig0,sig1,sig2,sig3}:
+        { rangeSerialized: BN,  count: number, sig0: BN, sig1: BN, sig2: BN,sig3: BN}): Buffer => {
         // First build the public inputs
         const fnBuilder = new FnRpcBuilder("generate_next", this.abi);
         const additionalRpc = fnBuilder.getBytes();
     
         // Then build the secret input
         const secretInputBuilder = ZkInputBuilder.createZkInputBuilder("generate_next", this.abi);
-        secretInputBuilder.addStruct(). addI64(rangeStart).addI64(rangeEnd).addI8(count);
+        secretInputBuilder.addStruct().addI64(rangeSerialized).addI8(count).addI64(sig0).addI64(sig1).addI64(sig2).addI64(sig3);
         // secretInputBuilder.addI64(rangeStart);
         // secretInputBuilder.addI64(rangeEnd);
         // secretInputBuilder.addI8(count);
@@ -76,14 +77,15 @@ export class RandomApi{
         );
     };
 
-    readonly getNextValues = ({count, rangeEnd,rangeStart}:{  rangeStart: BN, rangeEnd: BN, count: number}) => {
+    readonly getNextValues = ({count, rangeSerialized,sig0,sig1,sig2,sig3}:
+      { rangeSerialized: BN,  count: number, sig0: BN, sig1: BN, sig2: BN,sig3: BN}) => {
         const address = this.contractAddress;
         if (address === undefined) {
           throw new Error("No address provided");
         }
         console.log("getNextValues",address);
         // First build the RPC buffer that is the payload of the transaction.
-        const rpc = this.buildNextContribution({count, rangeEnd,rangeStart});
+        const rpc = this.buildNextContribution({count, rangeSerialized,sig0,sig1,sig2,sig3});
         // Then send the payload via the transaction API.
         return this.transactionApi.sendTransactionAndWait(address, rpc, DEFAULT_ZK_GAS_COST);
       };

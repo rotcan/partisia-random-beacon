@@ -24,9 +24,9 @@ impl ThreeFryType{
         ((x.overflowing_shl(d).0) | (x.overflowing_shr(64-d).0)) & MASK
     }
 
-    fn mix(x: &mut ThreeFryType , R: u32){
+    fn mix(x: &mut ThreeFryType , r: u32){
         x.c0=x.c0.overflowing_add(x.c1).0;
-        x.c1= Self::rotl_64(x.c1, R) ^ x.c0;
+        x.c1= Self::rotl_64(x.c1, r) ^ x.c0;
         
     }
 

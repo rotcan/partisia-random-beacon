@@ -8,9 +8,13 @@ const SETUP_TYPE: u8 = 0u8;
 #[derive(pbc_zk::SecretBinary, Clone, CreateTypeSpec)]
 pub struct SecretNextData {
   //  id: Sbi64,
-    range_start: Sbi64,
-    range_end: Sbi64,
+    // range_start: Sbi64,
+    range: Sbi64,
     count: Sbi8,
+    signature_le_0: Sbi64,
+    signature_le_1: Sbi64,
+    signature_le_2: Sbi64,
+    signature_le_3: Sbi64,
 }
 
 #[zk_compute(shortname = 0x61)]
