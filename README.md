@@ -1,4 +1,4 @@
-Random Beacon
+Verifiable Random Beacon
 This project uses Partisia Blockchain to create Pseudo Random Number Generator. It is implementing Threefry Random Number Generator. Reference : https://pdebuyl.be/blog/2016/threefry-rng.html. It is a counter based PRNG which uses a secret seed and counter to generate random numbers. To get an unbiased range, program is using Division with Rejection (Unbiased) method metioned here (https://www.pcg-random.org/posts/bounded-rands.html) This is acheived by a two step process
 
 First Step

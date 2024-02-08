@@ -33,7 +33,7 @@ const Home = () => {
 
                             </Grid>
                             <Grid item sx={{flexGrow:1}}>
-                                <div>Random Beacon</div>
+                                <div>Verifiable Random Beacon</div>
                             </Grid>
                             <Grid item sx={{width:100}} justifyContent={"flex-end"} textAlign={"right"} >
                                 <Wallet connectedWallet={connectedWallet} setConnectedWallet={setConnectedWallet} />

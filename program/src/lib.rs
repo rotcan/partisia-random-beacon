@@ -25,7 +25,7 @@ use pbc_contract_common::context::ContractContext;
 use pbc_contract_common::events::EventGroup;
 use pbc_contract_common::zk::{CalculationStatus, SecretVarId, ZkInputDef, ZkState, ZkStateChange,ZkClosed};
 use read_write_rpc_derive::{ReadRPC};
-use pbc_traits::{ReadRPC, ReadWriteState, WriteRPC};
+use pbc_traits::{ReadWriteState, WriteRPC};
 use create_type_spec_derive::CreateTypeSpec;
 use read_write_state_derive::ReadWriteState;
 use pbc_contract_common::signature::Signature;
@@ -34,8 +34,6 @@ use std::fmt::Write;
 
 use pbc_zk::Sbi64;
 mod zk_compute;
-mod philox;
-mod squaresrng;
 mod threefry;
 use crate::zk_compute::SecretNextData;
 use crate::threefry::ThreeFryType;
@@ -85,7 +83,7 @@ struct RngResult{
     result_id: u64,
 }
 /// The maximum size of MPC variables.
-const BITLENGTH_OF_SECRET_VARIABLES: u32 = 32;
+// const BITLENGTH_OF_SECRET_VARIABLES: u32 = 32;
 const MAX_TRIES: u8=255;
 /// The contract's state
 ///
@@ -154,7 +152,7 @@ fn initialize(ctx: ContractContext, zk_state: ZkState<SecretVarMetadata>,min_con
 #[zk_on_secret_input(shortname = 0x40, secret_type = "Sbi64")]
 fn add_input(
     context: ContractContext,
-    mut state: RngContractState,
+    state: RngContractState,
     zk_state: ZkState<SecretVarMetadata>,
 ) -> (
     RngContractState,
@@ -698,29 +696,29 @@ fn read_variable<T: ReadWriteState>(
 }
 
 
-fn serialize_range_value(start_val: u64, end_val: u64)->u64{
-    let mut temp=start_val;
-    let mut bits=0;
-    while temp>0{
+// fn serialize_range_value(start_val: u64, end_val: u64)->u64{
+//     let mut temp=start_val;
+//     let mut bits=0;
+//     while temp>0{
          
-        bits+=1;
-        temp = temp >> 1;
+//         bits+=1;
+//         temp = temp >> 1;
         
-    }
-    let diff=end_val-start_val;
-    let mut size_bits=(0..6).map(|m| (bits>>m) & (1)).collect::<Vec<u64>>();
-   // size_bits.reverse();
-    let  mut start_bits=(0..bits as usize).map(|m| (start_val>>m) & (1)).collect::<Vec<u64>>();
-//    start_bits.reverse();
-    let  mut end_bits=(0..(64-bits-6) as usize).map(|m| (diff>>m) & (1)).collect::<Vec<u64>>();
-  //  end_bits.reverse();
-    let mut final_array:Vec<u64>=vec![];
-    final_array=size_bits.iter().chain(start_bits.iter())
-    .chain(end_bits.iter()).map(|m| *m).collect::<Vec<u64>>();
-    let val:u64 = (0..63).fold(0,|acc,x| acc + &final_array[x] * (1<<x));
-    val
+//     }
+//     let diff=end_val-start_val;
+//     let mut size_bits=(0..6).map(|m| (bits>>m) & (1)).collect::<Vec<u64>>();
+//    // size_bits.reverse();
+//     let  mut start_bits=(0..bits as usize).map(|m| (start_val>>m) & (1)).collect::<Vec<u64>>();
+// //    start_bits.reverse();
+//     let  mut end_bits=(0..(64-bits-6) as usize).map(|m| (diff>>m) & (1)).collect::<Vec<u64>>();
+//   //  end_bits.reverse();
+//     let mut final_array:Vec<u64>=vec![];
+//     final_array=size_bits.iter().chain(start_bits.iter())
+//     .chain(end_bits.iter()).map(|m| *m).collect::<Vec<u64>>();
+//     let val:u64 = (0..63).fold(0,|acc,x| acc + &final_array[x] * (1<<x));
+//     val
     
-}
+// }
 
 fn deserialize_range_value(val: i64)->Vec<u64>{
     let mut val=(val as i128 +I64_TO_U64) as u64;

@@ -1,7 +1,7 @@
 
 const KEY_LENGTH: u64=3;
 const MASK: u64 = u64::MAX-1;
-const NW_THREEFRY: u64 = 2;
+//const NW_THREEFRY: u64 = 2;
 const ROTATION: [u32;8] = [16, 42, 12, 31, 16, 32, 24, 21];
 const C240_HEX: &str="1bd11bdaa9fc1a22";
 const N_ROUNDS_THREEFRY: u64=20;
@@ -56,8 +56,8 @@ impl ThreeFryType{
     pub fn threefry(p: ThreeFryType,k: ThreeFryType)->u64{
         let c240 = u64::from_str_radix(C240_HEX, 16).unwrap();
         let k: [u64;3] = [k.c0,k.c1, c240^k.c0^k.c1];
-        let mut rmod4: u64=0;
-        let mut rdiv4: u64=0;
+        let mut rmod4: u64;
+        let mut rdiv4: u64;
         let mut x:ThreeFryType = p.clone();
         for r in 0..N_ROUNDS_THREEFRY{
             rmod4 = (r%4) as u64;
@@ -100,29 +100,29 @@ impl ThreeFryType{
         0
     }
 
-    fn get_ranged_num_lemire(start: u64,end: u64,counter: &mut u64, seed: u64,max_tries: u8)->u64{
-        let range=end- start;
+    // fn get_ranged_num_lemire(start: u64,end: u64,counter: &mut u64, seed: u64,max_tries: u8)->u64{
+    //     let range=end- start;
   
-        let mut l=Self::get_rnd_num(*counter, seed, range);
-        *counter +=1;
-        if l<range{
-            let mut max_tries = max_tries;
-            let t=(0u64-range) % range;
-            while l<t && max_tries>0 {
-                l=Self::get_rnd_num(*counter, seed, range);
-                *counter +=1;
-                max_tries-=1;
-            }
-        }
-        l+start
+    //     let mut l=Self::get_rnd_num(*counter, seed, range);
+    //     *counter +=1;
+    //     if l<range{
+    //         let mut max_tries = max_tries;
+    //         let t=(0u64-range) % range;
+    //         while l<t && max_tries>0 {
+    //             l=Self::get_rnd_num(*counter, seed, range);
+    //             *counter +=1;
+    //             max_tries-=1;
+    //         }
+    //     }
+    //     l+start
         
-    }
+    // }
 
-    fn get_rnd_num(counter: u64, seed: u64, range: u64 )->u64{
-        let rnd=Self::threefry(ThreeFryType::new(counter,0),ThreeFryType::new(seed,0));
-        let rnd_new: u128=(rnd as u128) * (range as u128);
-        rnd_new as u64 
+    // fn get_rnd_num(counter: u64, seed: u64, range: u64 )->u64{
+    //     let rnd=Self::threefry(ThreeFryType::new(counter,0),ThreeFryType::new(seed,0));
+    //     let rnd_new: u128=(rnd as u128) * (range as u128);
+    //     rnd_new as u64 
         
-    }
+    // }
 }
 

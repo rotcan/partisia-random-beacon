@@ -450,7 +450,7 @@ const Rng = (props: Props) => {
             <Paper variant="outlined" square={false} className="padding5 textAlignLeft">
             <Grid container>
                 <Grid item sx={{ flexGrow: 1 }}>
-                    <div style={{width:'100%'}}>Random Beacon</div>
+                    <div style={{width:'100%'}}>Verifiable Random Beacon</div>
                 </Grid>
                 <Grid item sx={{width:'32px'}}>
                     {loading && <Loading />}
