@@ -12,6 +12,7 @@ import { RaffleState, getClaimNft } from "../../../contract/Raffle";
 import { BN } from "bn.js";
 import { useWeb3React } from "@web3-react/core";
 import useLoading from "../../useLoading";
+import { isRaffleCollected } from "./Index";
 
 interface AddressProof {
     proof: string | undefined,
@@ -109,10 +110,14 @@ const Whitelist = (props: Props) => {
     const isWinner = (index: number): boolean => {
         if (!props.raffleState)
             return false;
+        if(isRaffleCollected(props.raffleState))
+            return false;
         return props.raffleState?.winners.and(new BN(1 << index)).gt(new BN(0))
     }
 
     const isClaimEnabled = (index: number) => {
+        if(isRaffleCollected(props.raffleState))
+            return false;
         return isWinner(index) && !isAlreadyClaimed(index);
     }
 

@@ -23,6 +23,20 @@ const getCurrentTime = () => {
     const sec = new Date() / 1;
     return sec;
 }
+
+export const isRaffleCollected=(raffleState: RaffleState | undefined)=>{
+    return !raffleState?.isRaffleStarted && (
+        raffleState?.totalCount.eq(new BN(0)) || raffleState?.totalCount.eq(raffleState?.mintCount))
+}
+
+export const IsRaffleStarted=(raffleState: RaffleState | undefined)=>{
+    return raffleState?.isRaffleStarted && raffleState?.totalCount.eq(new BN(0));
+}
+
+export const IsRaffleEnded=(raffleState: RaffleState | undefined)=>{
+    return raffleState?.totalCount.gt(new BN(0)) && !raffleState?.totalCount.eq(raffleState?.mintCount)
+}
+
 const Raffle = (props: Props) => {
     const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<number>(getCurrentTime());
     const { raffleState } = useRaffleData({ address: props.address, endpoint: props.endpoint, lastUpdateTimestamp: lastUpdateTimestamp });
@@ -96,18 +110,17 @@ const Raffle = (props: Props) => {
         <Whitelist raffleState={raffleState} contractAddress={props.address} endpoint={props.endpoint} />
         <Paper variant="outlined" square={false} className="padding5 textAlignLeft">
             <Grid container spacing={2} direction={"row"}>
-                {!raffleState?.isRaffleStarted && (
-                    raffleState?.totalCount.eq(new BN(0)) || raffleState?.totalCount.eq(raffleState?.mintCount)) &&
+                {isRaffleCollected(raffleState) &&
                     <Grid item xs>
                         <Start contractAddress={props.address} endpoint={props.endpoint} nftUrl={process.env.REACT_APP_NFT_URL} lastUpdateTimestamp={lastUpdateTimestamp} />
                     </Grid>
                 }
-                {raffleState?.isRaffleStarted && raffleState?.totalCount.eq(new BN(0)) &&
+                {IsRaffleStarted(raffleState) &&
                     <Grid item xs>
                         <Finish contractAddress={props.address} endpoint={props.endpoint} lastUpdateTimestamp={lastUpdateTimestamp} />
                     </Grid>
                 }
-                {raffleState?.totalCount.gt(new BN(0)) && !raffleState?.totalCount.eq(raffleState?.mintCount) &&
+                {IsRaffleEnded(raffleState) &&
                     <Grid item xs>
                         <span>Wait for users to claim the NFT</span>
                     </Grid>
