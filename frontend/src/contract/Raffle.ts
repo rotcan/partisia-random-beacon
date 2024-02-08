@@ -108,7 +108,7 @@ export const readRaffleMetadata=async({endpoint,address}:{endpoint: string,addre
     const totalMinted=recursivelyDecodeResult(await raffleContract._tokenIds()) as string;
     return { isRaffleStarted,merkleRoot,mintCount: new BN(mintCount.toString()),
         minted: new BN(minted.toString()),tokenUri,winners: new BN(winners.toString()),totalCount : new BN(totalCount.toString()),
-        totalMinted: new BN(0)} as RaffleState;
+        totalMinted: new BN(totalMinted.toString())} as RaffleState;
 
 }
 

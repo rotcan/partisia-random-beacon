@@ -95,7 +95,7 @@ const Raffle = (props: Props) => {
         <Paper variant="outlined" square={false} className="padding5 textAlignLeft">
             <Grid container>
                 <Grid item sx={{ flexGrow: 1 }}>
-                    <div style={{width:'100%'}}>Raffle | Nfts Minted: {raffleState?.totalCount.toString()}</div>
+                    <div style={{width:'100%'}}>Raffle | Nfts Minted: {raffleState?.totalMinted.toString()}</div>
                 </Grid>
                 <Grid item sx={{width:'32px'}}>
                     {loading && <Loading />}
