@@ -1,12 +1,12 @@
 {
   "files": {
     "main.css": "/partisia-random-beacon/static/css/main.bf454e3c.css",
-    "main.js": "/partisia-random-beacon/static/js/main.8fd80510.js",
+    "main.js": "/partisia-random-beacon/static/js/main.77fad08f.js",
     "static/js/612.e18009ef.chunk.js": "/partisia-random-beacon/static/js/612.e18009ef.chunk.js",
     "index.html": "/partisia-random-beacon/index.html"
   },
   "entrypoints": [
     "static/css/main.bf454e3c.css",
-    "static/js/main.8fd80510.js"
+    "static/js/main.77fad08f.js"
   ]
 }
